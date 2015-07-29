@@ -1,0 +1,485 @@
+<!--Leaflet Version-->
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>DEC</title>
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+		<link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+		
+		<!-- CSS Styling -->
+		<style type="text/css">
+			html, body, #map {
+				height: 98.3%;
+				padding: 0;
+				margin: 0;
+			}
+			.toggle.ios, .toggle-on.ios, .toggle-off.ios{
+				border-radius:20px;
+			}
+			.toggle.ios .toggle-handle{
+				border-radius: 20px;
+			}
+			.fast .toggle-group{
+				transition: left 0.1s;
+				-webkit-transition: left 0.1s;
+			}
+			.modal-dialog.modal-sm{
+				margin-top: 60px;
+				margin-right: 10px;
+				width: 360px; /*needed to increase modal size because title of first layer was too long*/
+			}
+			.modal.fade .modal-dialog {
+				-webkit-transform: scale(0.1);
+				-moz-transform: scale(0.1);
+				-ms-transform: scale(0.1);
+				transform: scale(0.1);
+				top: 90px;
+				left: 100px;
+				opacity: 0.7;
+				-webkit-transition: all 0.3s;
+				-moz-transition: all 0.3s;
+				transition: all 0.3s;
+			}
+			.modal.fade.in .modal-dialog {
+				-webkit-transform: scale(1);
+				-moz-transform: scale(1);
+				-ms-transform: scale(1);
+				transform: scale(1);
+				-webkit-transform: translate3d(-100px, -90px, 0);
+				transform: translate3d(-100px, -90px, 0);
+				opacity: 1;
+			}
+			.modal-backdrop, .modal-backdrop.fade.in{
+				opacity:0;
+			}
+		</style>
+	</head>
+	
+	<!-- Navigation Bar, must be padded right by 15px or a scroll bar appears at bottom of map-->
+	<nav class="navbar navbar-default" style="margin:0; border:0; padding-right:15px; background-color:#FFFFFF">
+		<div class="navbar-header">
+			<a class="navbar-brand" href="#">DEC</a>
+		</div>
+		<div>
+			<ul class="nav navbar-nav">
+				<form class="navbar-form" style="padding-left:0; padding-right:0">
+					<input type="text" class="form-control" placeholder="Search By Address" id="pac-input" style="width: 400px">	
+				</form>
+			</ul>
+			<ul class="nav navbar-nav navbar-right">
+				<form class="navbar-form pull-right">
+					<button type="button" class="btn btn-primary" id="searchModalbtn">
+						<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+					</button>
+					<div id="searchModal" class="modal" role="dialog">
+						<div class="modal-dialog modal-lg" style="margin-top:60px; width:780px">
+							<div class="modal-content">
+								<div class="modal-header" style="padding:10px">
+									<button type="button" class="close" data-dismiss="modal">&times;</button>
+									<h4 class="modal-title">Query Builder 
+										<a tabindex="0" class="btn" style="background:#ffffff; outline:none; padding:0px; border:0px" role="button" data-toggle="popover" data-trigger="hover" title="Help" data-html="true"data-content="Fill in every field with a value using the dropdowns and type in a value for the non-grayed out textbox, then click Find.<br><br>Clear will only work on the layer that is selected in the top box.<br><br>The comparators 'IS' and 'ISNOT' are mainly used with the value NULL.<br>The bottom right textbox does not require a value, because '' or nothing is a valid query. <br><br>Please request for more searchable fields if they are known."><span class="glyphicon glyphicon-question-sign" aria-hidden="true" style="color:#337ab7;background:#ffffff;opacity:0.8;"></span></a>
+									</h4>
+								</div>
+								<div class="modal-body" style="padding:30px">
+									<!-- var newQuery = "SELECT * FROM " + tableName + " WHERE " + field name + other SQL comparator + searchfield surrounded by ' ' -->
+									SELECT * FROM&emsp;
+									<div class="input-group">
+										<input type="text" id="searchBoxLayer"class="form-control" aria-label="..." readonly style="width:220px">
+										<div class="input-group-btn">
+											<!-- Button and dropdown menu -->
+											<!-- Add all selection field layers to array -->
+											<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+												<span class="caret"></span>
+												<span class="sr-only">Toggle Dropdown</span>
+											</button>
+												<ul class="dropdown-menu">
+													<li><a href="#" onclick="return setLayer($(this).text(), 'layerZero')">sewergrid</a></li>
+													<li><a href="#" onclick="return setLayer($(this).text(), 'layerOne')">sscollectionsyswork</a></li>
+													<li><a href="#" onclick="return setLayer($(this).text(), 'layerTwo')">sanitarysewerstructureswork</a></li>
+													<li><a href="#" onclick="return setLayer($(this).text(), 'layerThree')">subbasins</a></li>
+													<li><a href="#" onclick="return setLayer($(this).text(), 'layerFour')">stormsystemstructures</a></li>
+													<li><a href="#" onclick="return setLayer($(this).text(), 'layerFive')">stormsystempipes</a></li>
+													<li><a href="#" onclick="return setLayer($(this).text(), 'layerSix')">creeks</a></li>
+													<li><a href="#" onclick="return setLayer($(this).text(), 'layerSeven')">oakland_council_districts</a></li>
+													<li><a href="#" onclick="return setLayer($(this).text(), 'layerEight')">city_facilites</a></li>
+													<li><a href="#" onclick="return setLayer($(this).text(), 'layerNine')">ac_parcels_2015</a></li>
+													<li><a href="#" onclick="return setLayer($(this).text(), 'layerTen')">asbuilt</a></li>
+													<li><a href="#" onclick="return setLayer($(this).text(), 'layerEleven')">masterproject2015</a></li>
+												</ul>
+										</div>
+									</div>
+									<br><br>
+									&emsp;&emsp;&emsp;&emsp;WHERE&emsp;
+									<div class="input-group">
+										<input type="text" id="searchBoxField"class="form-control" aria-label="..." readonly style="width:220px">
+										<div class="input-group-btn">
+											<!-- Button and dropdown menu -->
+											<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+												<span class="caret"></span>
+												<span class="sr-only">Toggle Dropdown</span>
+											</button>
+											<ul class="dropdown-menu" id="layerZero" style="display:none"><!--Fields within table-->
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">grid_no</a></li>
+											</ul>
+											<ul class="dropdown-menu" id="layerOne" style="display:none"><!--Fields within table-->
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">project</a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">projectno</a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">pipe_diam</a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">project</a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">facilityid</a></li>
+											</ul>
+											<ul class="dropdown-menu" id="layerTwo" style="display:none"><!--Fields within table-->
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">strucno</a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">eccon</a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">stru_type</a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">facilityid</a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">legacyid</a></li>
+											</ul>
+											<ul class="dropdown-menu" id="layerThree" style="display:none"><!--Fields within table-->
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">sub_basinda</a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">projectn_1</a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">projectn_2</a></li>
+											</ul>
+											<ul class="dropdown-menu" id="layerFour" style="display:none"><!--Fields within table-->
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">struc_id</a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">oakhillsid</a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">priority</a></li>
+											</ul>
+											<ul class="dropdown-menu" id="layerFive" style="display:none"><!--Fields within table-->
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">facilityid</a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">diaminch</a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">gxp_id</a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">pipes_id</a></li>
+											</ul>
+											<ul class="dropdown-menu" id="layerSix" style="display:none"><!--Fields within table-->
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">facilityid</a></li>
+											</ul>
+											<ul class="dropdown-menu" id="layerSeven" style="display:none"><!--Fields within table-->
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">id</a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">name</a></li>
+											</ul>
+											<ul class="dropdown-menu" id="layerEight" style="display:none"><!--Fields within table-->
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">bldg_no</a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">user_</a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">facilityid</a></li>
+											</ul>
+											<ul class="dropdown-menu" id="layerNine" style="display:none"><!--Fields within table-->
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">apn</a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">apn_sort</a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">apn_air</a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">apn_ground</a></li>
+											</ul>
+											<ul class="dropdown-menu" id="layerTen" style="display:none"><!--Fields within table-->
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">projectno</a></li>
+											</ul>
+											<ul class="dropdown-menu" id="layerEleven" style="display:none"><!--Fields within table-->
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">projectno</a></li>
+											</ul>
+										</div>
+									</div>
+									&emsp;
+									<div class="input-group">
+										<input type="text" id="searchBoxComparator"class="form-control" aria-label="..." readonly style="text-Align:center; padding-left:6px; padding-right:6px; width:60px">
+										<div class="input-group-btn">
+											<!-- Button and dropdown menu -->
+											<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+												<span class="caret"></span>
+												<span class="sr-only">Toggle Dropdown</span>
+											</button>
+											<ul class="dropdown-menu">
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxComparator')">=</a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxComparator')">></a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxComparator')">>=</a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxComparator')"><</a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxComparator')"><=</a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxComparator')"><></a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxComparator')">IS</a></li>
+												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxComparator')">IS NOT</a></li>
+											</ul>
+										</div>
+									</div>
+									&emsp;
+									<div class="input-group">
+										<input type="text" id="searchBoxData" class="form-control" aria-label="...">
+									</div>
+								</div>
+								<div class="modal-footer" style="padding:10px; padding-right:30px">
+									<input type="button" class="btn btn-primary" value="Find" id="Find" style="padding-right:20px; padding-left:20px">
+									<input type="button" class="btn btn-primary" value="Clear" id="Clear" style="margin-left:10px; padding-right:20px; padding-left:20px">
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<button type="button" class="btn btn-primary" id="layerModalbtn">
+						<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+					</button>
+					<div id="layerModal" class="modal fade" role="dialog">
+						<div class="modal-dialog modal-sm">
+							<!--Couldn't get the modal backdrop to be completely gone, only options are to make it invisible or make it so it cant be closed by clicking outside the modal-->
+							<div class="modal-content">
+								<div class="modal-header" style="padding:10px">
+									<button type="button" class="close" data-dismiss="modal">&times;</button>
+									<h4 class="modal-title">Toggle Layers</h4>
+								</div>
+								<div class="modal-body" style="padding:10px">
+									<div class="checkbox">
+										<!-- Value should be where your layer will be stored in the sublayer array-->
+										<!-- add "checked" if you want to have the layer visible when loaded, if you don't want the layer visible you will also need to sublayer.hide() it when you load it in-->
+										<input name="layerselect" value="0" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
+										&emsp;sewergrid<br>
+										<input name="layerselect" value="1" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
+										&emsp;sscollectionsyswork<br>
+										<input name="layerselect" value="2" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
+										&emsp;sanitarysewerstructureswork<br>
+										<input name="layerselect" value="3" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
+										&emsp;subbasins<br>
+										<input name="layerselect" value="4" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
+										&emsp;stormsystemstructures<br>
+										<input name="layerselect" value="5" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
+										&emsp;stormsystempipes<br>
+										<input name="layerselect" value="6" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
+										&emsp;creeks<br>
+										<input name="layerselect" value="7" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
+										&emsp;oakland_council_districts<br>
+										<input name="layerselect" value="8" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
+										&emsp;city_facilites<br>
+										<input name="layerselect" value="9" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
+										&emsp;ac_parcels_2015<br>
+										<input name="layerselect" value="10" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
+										&emsp;asbuilt<br>
+										<input name="layerselect" value="11" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
+										&emsp;masterproject2015<br>
+									</div>
+								</div>
+								<div class="modal-footer" style="padding:5px; padding-right:20px">
+									<button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+				</form>
+			</ul>
+		</div>
+	</nav>
+    <div id="map"></div>
+	
+	<!--include scripts-->
+	<!--Jquery needs to be before bootstrap-->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.14/themes/css/cartodb.css" />
+	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="https://gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css" />
+	<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"></script>
+	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=false&libraries=places"></script>
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.14/cartodb.js"></script>
+    
+    <!-- Drop your code between the script tags below! -->
+    <script>
+	$(document).ready(function(){
+		$('[data-toggle="popover"]').popover(); 
+	});
+	function setLayer(e, layerNum){
+		document.getElementById("searchBoxLayer").value=e;
+		document.getElementById("searchBoxField").value='';
+		
+		document.getElementById('layerZero').style.display = 'none';
+		document.getElementById('layerOne').style.display = 'none';
+		document.getElementById('layerTwo').style.display = 'none';
+		document.getElementById('layerThree').style.display = 'none';
+		document.getElementById('layerFour').style.display = 'none';
+		document.getElementById('layerFive').style.display = 'none';
+		document.getElementById('layerSix').style.display = 'none';
+		document.getElementById('layerSeven').style.display = 'none';
+		document.getElementById('layerEight').style.display = 'none';
+		document.getElementById('layerNine').style.display = 'none';
+		document.getElementById('layerTen').style.display = 'none';
+		document.getElementById('layerEleven').style.display = 'none';
+		
+		document.getElementById(layerNum).style.display = '';
+		return false;
+	}
+	function setField(e, fieldName){
+		document.getElementById(fieldName).value=e;
+		return false;
+	}
+	
+	window.onload = function() {
+		var user = 'oakland-admin';
+		//tableName isn't very useful unless we decide to make it searchable by more layers or attempt to automate the addlayer process
+		var layerSource = [{  //mapname:DEC 10 layers
+			tableName: ["sewergrid", "sscollectionsyswork", "sanitarysewerstructureswork", "subbasins", "stormsystemstructures", "stormsystempipes", "creeks", "oakland_council_districts", "city_facilites", "ac_parcels_2015"],
+			vizjson: "https://oakland.cartodb.com/u/oakland-admin/api/v2/viz/f47911ae-298a-11e5-9f31-42010a14cb63/viz.json"
+		},{						//mapname:MasterProjectAsbuilt 2 layers
+			tableName: ["asbuilt","masterproject2015"],
+			vizjson: "https://oakland.cartodb.com/u/oakland-admin/api/v2/viz/c551de84-3483-11e5-ac1d-42010a149c0c/viz.json"
+		}]
+		
+		// Initialize map center and zoom level
+		var options = {
+					center: [37.8,-122.21], // Oakland
+					zoom: 12,
+					maxZoom: 21 //suggested max zoom allowed
+		}
+		
+		// Instantiate map on specified DOM element
+		var map_object = new L.Map(map, options);
+		
+		// Add a basemap to the map object just created
+		L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+			maxZoom:22,
+			maxNativeZoom: 18 //zoom level to scale additional zoom layers
+			}).addTo(map_object);
+        
+		var sublayers = [];
+		var sublayersNames = [];
+		//don't try to use a loop to grab from different vizjsons
+		//if you don't want a layer coming with the vizjson sublayer.hide() it instead of pushing it
+		//hide layers here if you didn't want it visible on load
+		cartodb.createLayer(map_object, layerSource[0].vizjson)
+			.addTo(map_object)
+			.done(function(layer){
+				var sublayer;
+				for(var i = 0; i < 10; i++){
+					sublayer = layer.getSubLayer(i);
+					sublayers.push(sublayer);
+					sublayersNames.push(layerSource[0].tableName[i]);
+					sublayer.hide();
+				}
+			})
+			.error(function(err){
+				console.log("error: " + err);
+			});
+		
+		cartodb.createLayer(map_object, layerSource[1].vizjson)
+			.addTo(map_object)
+			.done(function(layer){
+				var sublayer;
+				for(var i = 0; i < 2; i++){
+					sublayer = layer.getSubLayer(i);
+					sublayers.push(sublayer);
+					sublayersNames.push(layerSource[1].tableName[i]);
+					sublayer.hide();
+				}
+			})
+			.error(function(err){
+				console.log("error: " + err);
+			});
+		initSearchBox();
+		
+		<!--wiring up buttons to do things-->
+		//var newQuery = "SELECT * FROM " + tableName + SQL comparator + field name + other SQL comparator + searchfield surrounded by ' '
+		$('#Find').click(function(){
+			if(document.getElementById('searchBoxLayer').value == '' || document.getElementById('searchBoxField').value == '' || document.getElementById('searchBoxComparator').value == ''){
+				alert('Fill in ALL the fields');
+				return;
+			}
+			var newQuery = "SELECT * FROM " + document.getElementById('searchBoxLayer').value + " WHERE " + document.getElementById('searchBoxField').value + " " + document.getElementById('searchBoxComparator').value + " ";
+			if(document.getElementById('searchBoxData').value == 'NULL'){
+				newQuery = newQuery + "NULL";
+			}else{
+				newQuery = newQuery + "'" + document.getElementById('searchBoxData').value + "'";
+			}
+			var num = getSubLayerNum(document.getElementById('searchBoxLayer').value);
+			if(num == -1){
+				console.log('invalid layer');
+				return;
+			}
+			console.log('layer' + num + 'Query' + newQuery);
+			createQuery(newQuery, sublayers[num]);
+		});
+		
+		$('#Clear').click(function(){
+			if(document.getElementById('searchBoxLayer').value == ''){
+				return;
+			}
+			var newQuery = "SELECT * FROM " + document.getElementById('searchBoxLayer').value;
+			var num = getSubLayerNum(document.getElementById('searchBoxLayer').value);
+			if(num == -1){
+				console.log('invalid layer');
+				return;
+			}
+			console.log('layer' + num + 'Query' + newQuery);
+			createQuery(newQuery, sublayers[num]);
+		});
+		
+		function getSubLayerNum(str){
+			for(var i = 0; i < sublayersNames.length; i++){
+				if(sublayersNames[i] == str){
+					return i;
+				}
+			}
+			return -1;
+		}
+		
+		$('#layerModalbtn').click(function(){
+			$('#layerModal').modal();
+		});
+		
+		$('#searchModalbtn').click(function(){
+			$('#searchModal').modal();
+		});
+		
+		//class for toggles, 
+		$('input[name="layerselect"]').change(function(){
+			if($(this).is(":checked")){
+				sublayers[this.value].show();
+			}else{
+				sublayers[this.value].hide();
+			}
+		});
+		
+		<!-- Functions -->
+		//not fully optimized
+		<!--Geocoder Start-->
+		function initSearchBox(){
+			//bias the search towards the map bounds
+			var bounds = map_object.getBounds();
+			var latlngSW = new google.maps.LatLng(bounds._southWest.lat, bounds._southWest.lng);
+			var latlngNE = new google.maps.LatLng(bounds._northEast.lat, bounds._northEast.lng);
+			var defaultBound = new google.maps.LatLngBounds();
+			defaultBound.extend(latlngSW);
+			defaultBound.extend(latlngNE);
+			
+			var searchBox = new google.maps.places.SearchBox(document.getElementById('pac-input'), {bounds: defaultBound});
+			var marker = null; //for first run
+			google.maps.event.addListener(searchBox, 'places_changed', function(){
+				var place = searchBox.getPlaces()[0];
+				if(!place.geometry){
+					return;
+				}
+				if(marker != null){
+					map_object.removeLayer(marker);
+				}
+				map_object.setView(new L.LatLng(place.geometry.location.lat(), place.geometry.location.lng()), 17);
+				marker = new L.marker([place.geometry.location.lat(), place.geometry.location.lng()],{clickable:false});
+				map_object.addLayer(marker);
+			});
+		}
+		<!--Geocoder End-->
+		
+		<!--Query Start-->	
+		//re-written, this is all you need
+		//still needs to be in main/onload unless you pass in the mapobject and the username or the username could just be a static
+		//requires full query statement "Select * From tableName WHERE column = 'data'" and the layer object
+		function createQuery(query, myLayer){
+			var sql = new cartodb.SQL({user});
+			myLayer.setSQL(query);
+			sql.getBounds(query).done(function(bounds){
+				map_object.fitBounds(bounds, {maxZoom:17});
+			})
+			return;
+		}
+		<!--Query End-->
+	}
+		// http://www.w3schools.com/bootstrap/default.asp
+		// https://developers.google.com/maps/documentation/javascript/examples/places-searchbox
+		// http://academy.cartodb.com/courses/03-cartodbjs-ground-up/lesson-1.html
+		// http://www.bootstraptoggle.com/ Toggle Switches
+    </script>
+  </body>
+</html>
