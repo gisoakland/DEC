@@ -55,214 +55,205 @@
 			}
 		</style>
 	</head>
-	
 	<!-- Navigation Bar, must be padded right by 15px or a scroll bar appears at bottom of map-->
-	<nav class="navbar navbar-default" style="margin:0; border:0; padding-right:15px; background-color:#FFFFFF">
-		<div class="navbar-header">
-			<a class="navbar-brand" href="#">DEC</a>
-		</div>
-		<div>
-			<ul class="nav navbar-nav">
-				<form class="navbar-form" style="padding-left:0; padding-right:0">
-					<input type="text" class="form-control" placeholder="Search By Address" id="pac-input" style="width: 400px">	
-				</form>
-			</ul>
-			<ul class="nav navbar-nav navbar-right">
-				<form class="navbar-form pull-right">
-					<button type="button" class="btn btn-primary" id="searchModalbtn">
-						<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-					</button>
-					<div id="searchModal" class="modal" role="dialog">
-						<div class="modal-dialog modal-lg" style="margin-top:60px; width:780px">
-							<div class="modal-content">
-								<div class="modal-header" style="padding:10px">
-									<button type="button" class="close" data-dismiss="modal">&times;</button>
-									<h4 class="modal-title">Query Builder 
-										<a tabindex="0" class="btn" style="background:#ffffff; outline:none; padding:0px; border:0px" role="button" data-toggle="popover" data-trigger="hover" title="Help" data-html="true"data-content="Fill in every field with a value using the dropdowns and type in a value for the non-grayed out textbox, then click Find.<br><br>Clear will only work on the layer that is selected in the top box.<br><br>The comparators 'IS' and 'ISNOT' are mainly used with the value NULL.<br>The bottom right textbox does not require a value, because '' or nothing is a valid query. <br><br>Please request for more searchable fields if they are known."><span class="glyphicon glyphicon-question-sign" aria-hidden="true" style="color:#337ab7;background:#ffffff;opacity:0.8;"></span></a>
-									</h4>
-								</div>
-								<div class="modal-body" style="padding:30px">
-									<!-- var newQuery = "SELECT * FROM " + tableName + " WHERE " + field name + other SQL comparator + searchfield surrounded by ' ' -->
-									SELECT * FROM&emsp;
-									<div class="input-group">
-										<input type="text" id="searchBoxLayer"class="form-control" aria-label="..." readonly style="width:220px">
-										<div class="input-group-btn">
-											<!-- Button and dropdown menu -->
-											<!-- Add all selection field layers to array -->
-											<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-												<span class="caret"></span>
-												<span class="sr-only">Toggle Dropdown</span>
-											</button>
-												<ul class="dropdown-menu">
-													<li><a href="#" onclick="return setLayer($(this).text(), 'layerZero')">sewergrid</a></li>
-													<li><a href="#" onclick="return setLayer($(this).text(), 'layerOne')">sscollectionsyswork</a></li>
-													<li><a href="#" onclick="return setLayer($(this).text(), 'layerTwo')">sanitarysewerstructureswork</a></li>
-													<li><a href="#" onclick="return setLayer($(this).text(), 'layerThree')">subbasins</a></li>
-													<li><a href="#" onclick="return setLayer($(this).text(), 'layerFour')">stormsystemstructures</a></li>
-													<li><a href="#" onclick="return setLayer($(this).text(), 'layerFive')">stormsystempipes</a></li>
-													<li><a href="#" onclick="return setLayer($(this).text(), 'layerSix')">creeks</a></li>
-													<li><a href="#" onclick="return setLayer($(this).text(), 'layerSeven')">oakland_council_districts</a></li>
-													<li><a href="#" onclick="return setLayer($(this).text(), 'layerEight')">city_facilites</a></li>
-													<li><a href="#" onclick="return setLayer($(this).text(), 'layerNine')">ac_parcels_2015</a></li>
-													<li><a href="#" onclick="return setLayer($(this).text(), 'layerTen')">asbuilt</a></li>
-													<li><a href="#" onclick="return setLayer($(this).text(), 'layerEleven')">masterproject2015</a></li>
-												</ul>
-										</div>
-									</div>
-									<br><br>
-									&emsp;&emsp;&emsp;&emsp;WHERE&emsp;
-									<div class="input-group">
-										<input type="text" id="searchBoxField"class="form-control" aria-label="..." readonly style="width:220px">
-										<div class="input-group-btn">
-											<!-- Button and dropdown menu -->
-											<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-												<span class="caret"></span>
-												<span class="sr-only">Toggle Dropdown</span>
-											</button>
-											<ul class="dropdown-menu" id="layerZero" style="display:none"><!--Fields within table-->
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">grid_no</a></li>
-											</ul>
-											<ul class="dropdown-menu" id="layerOne" style="display:none"><!--Fields within table-->
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">project</a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">projectno</a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">pipe_diam</a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">project</a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">facilityid</a></li>
-											</ul>
-											<ul class="dropdown-menu" id="layerTwo" style="display:none"><!--Fields within table-->
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">strucno</a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">eccon</a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">stru_type</a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">facilityid</a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">legacyid</a></li>
-											</ul>
-											<ul class="dropdown-menu" id="layerThree" style="display:none"><!--Fields within table-->
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">sub_basinda</a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">projectn_1</a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">projectn_2</a></li>
-											</ul>
-											<ul class="dropdown-menu" id="layerFour" style="display:none"><!--Fields within table-->
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">struc_id</a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">oakhillsid</a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">priority</a></li>
-											</ul>
-											<ul class="dropdown-menu" id="layerFive" style="display:none"><!--Fields within table-->
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">facilityid</a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">diaminch</a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">gxp_id</a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">pipes_id</a></li>
-											</ul>
-											<ul class="dropdown-menu" id="layerSix" style="display:none"><!--Fields within table-->
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">facilityid</a></li>
-											</ul>
-											<ul class="dropdown-menu" id="layerSeven" style="display:none"><!--Fields within table-->
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">id</a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">name</a></li>
-											</ul>
-											<ul class="dropdown-menu" id="layerEight" style="display:none"><!--Fields within table-->
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">bldg_no</a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">user_</a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">facilityid</a></li>
-											</ul>
-											<ul class="dropdown-menu" id="layerNine" style="display:none"><!--Fields within table-->
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">apn</a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">apn_sort</a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">apn_air</a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">apn_ground</a></li>
-											</ul>
-											<ul class="dropdown-menu" id="layerTen" style="display:none"><!--Fields within table-->
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">projectno</a></li>
-											</ul>
-											<ul class="dropdown-menu" id="layerEleven" style="display:none"><!--Fields within table-->
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">projectno</a></li>
-											</ul>
-										</div>
-									</div>
-									&emsp;
-									<div class="input-group">
-										<input type="text" id="searchBoxComparator"class="form-control" aria-label="..." readonly style="text-Align:center; padding-left:6px; padding-right:6px; width:60px">
-										<div class="input-group-btn">
-											<!-- Button and dropdown menu -->
-											<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-												<span class="caret"></span>
-												<span class="sr-only">Toggle Dropdown</span>
-											</button>
-											<ul class="dropdown-menu">
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxComparator')">=</a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxComparator')">></a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxComparator')">>=</a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxComparator')"><</a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxComparator')"><=</a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxComparator')"><></a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxComparator')">IS</a></li>
-												<li><a href="#" onclick="return setField($(this).text(), 'searchBoxComparator')">IS NOT</a></li>
-											</ul>
-										</div>
-									</div>
-									&emsp;
-									<div class="input-group">
-										<input type="text" id="searchBoxData" class="form-control" aria-label="...">
-									</div>
-								</div>
-								<div class="modal-footer" style="padding:10px; padding-right:30px">
-									<input type="button" class="btn btn-primary" value="Find" id="Find" style="padding-right:20px; padding-left:20px">
-									<input type="button" class="btn btn-primary" value="Clear" id="Clear" style="margin-left:10px; padding-right:20px; padding-left:20px">
+	<nav class="navbar navbar-default" style="min-width:790px; margin:0; border:0; background-color:#FFFFFF;">
+		<form class="navbar-form pull-left" style="border:0; margin-bottom:8px; margin-top: 8px; margin-right:0px; margin-left:5px; padding:0; width:460px">
+			<a class="navbar-brand pull-left" href="#" style="width:50px;height:20px;padding:0;padding-top:8px; padding-left:5px">DEC</a>
+			<input type="text" class="form-control pull-left" placeholder="Search By Address" id="pac-input" style="width: 400px">	
+		</form>
+		<form class="navbar-form pull-right" style="border:0; margin-bottom:8; margin-top: 8px; margin-right:5px; margin-left:0px; padding:0;width:85px">
+			<button type="button" class="btn btn-primary" id="searchModalbtn">
+				<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+			</button>
+			<div id="searchModal" class="modal" role="dialog" style="min-width:780px">
+				<div class="modal-dialog modal-lg" style="margin-top:60px; min-width:780px">
+					<div class="modal-content" style="min-width:780px">
+						<div class="modal-header" style="padding:10px">
+							<button type="button" class="close" data-dismiss="modal">&times;</button>
+							<h4 class="modal-title">Query Builder 
+								<a tabindex="0" class="btn" style="background:#ffffff; outline:none; padding:0px; border:0px" role="button" data-toggle="popover" data-trigger="hover" title="Help" data-html="true"data-content="Fill in every field with a value using the dropdowns and type in a value for the non-grayed out textbox, then click Find.<br><br>Clear will only work on the layer that is selected in the top box.<br><br>The comparators 'IS' and 'ISNOT' are mainly used with the value NULL.<br>The bottom right textbox does not require a value, because '' or nothing is a valid query. <br><br>Please request for more searchable fields if they are known."><span class="glyphicon glyphicon-question-sign" aria-hidden="true" style="color:#337ab7;background:#ffffff;opacity:0.8;"></span></a>
+							</h4>
+						</div>
+						<div class="modal-body" style="min-width:780px; padding:30px">
+							<!-- var newQuery = "SELECT * FROM " + tableName + " WHERE " + field name + other SQL comparator + searchfield surrounded by ' ' -->
+							SELECT * FROM&emsp;
+							<div class="input-group">
+								<input type="text" id="searchBoxLayer"class="form-control" aria-label="..." readonly style="width:220px">
+								<div class="input-group-btn">
+									<!-- Button and dropdown menu -->
+									<!-- Add all selection field layers to array -->
+									<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+										<span class="caret"></span>
+										<span class="sr-only">Toggle Dropdown</span>
+									</button>
+										<ul class="dropdown-menu">
+											<li><a href="#" onclick="return setLayer($(this).text(), 'layerZero')">sewergrid</a></li>
+											<li><a href="#" onclick="return setLayer($(this).text(), 'layerOne')">sscollectionsyswork</a></li>
+											<li><a href="#" onclick="return setLayer($(this).text(), 'layerTwo')">sanitarysewerstructureswork</a></li>
+											<li><a href="#" onclick="return setLayer($(this).text(), 'layerThree')">subbasins</a></li>
+											<li><a href="#" onclick="return setLayer($(this).text(), 'layerFour')">stormsystemstructures</a></li>
+											<li><a href="#" onclick="return setLayer($(this).text(), 'layerFive')">stormsystempipes</a></li>
+											<li><a href="#" onclick="return setLayer($(this).text(), 'layerSix')">creeks</a></li>
+											<li><a href="#" onclick="return setLayer($(this).text(), 'layerSeven')">oakland_council_districts</a></li>
+											<li><a href="#" onclick="return setLayer($(this).text(), 'layerEight')">city_facilites</a></li>
+											<li><a href="#" onclick="return setLayer($(this).text(), 'layerNine')">ac_parcels_2015</a></li>
+											<li><a href="#" onclick="return setLayer($(this).text(), 'layerTen')">asbuilt</a></li>
+											<li><a href="#" onclick="return setLayer($(this).text(), 'layerEleven')">masterproject2015</a></li>
+										</ul>
 								</div>
 							</div>
-						</div>
-					</div>
-					
-					<button type="button" class="btn btn-primary" id="layerModalbtn">
-						<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
-					</button>
-					<div id="layerModal" class="modal fade" role="dialog">
-						<div class="modal-dialog modal-sm">
-							<!--Couldn't get the modal backdrop to be completely gone, only options are to make it invisible or make it so it cant be closed by clicking outside the modal-->
-							<div class="modal-content">
-								<div class="modal-header" style="padding:10px">
-									<button type="button" class="close" data-dismiss="modal">&times;</button>
-									<h4 class="modal-title">Toggle Layers</h4>
-								</div>
-								<div class="modal-body" style="padding:10px">
-									<div class="checkbox">
-										<!-- Value should be where your layer will be stored in the sublayer array-->
-										<!-- add "checked" if you want to have the layer visible when loaded, if you don't want the layer visible you will also need to sublayer.hide() it when you load it in-->
-										<input name="layerselect" value="0" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
-										&emsp;sewergrid<br>
-										<input name="layerselect" value="1" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
-										&emsp;sscollectionsyswork<br>
-										<input name="layerselect" value="2" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
-										&emsp;sanitarysewerstructureswork<br>
-										<input name="layerselect" value="3" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
-										&emsp;subbasins<br>
-										<input name="layerselect" value="4" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
-										&emsp;stormsystemstructures<br>
-										<input name="layerselect" value="5" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
-										&emsp;stormsystempipes<br>
-										<input name="layerselect" value="6" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
-										&emsp;creeks<br>
-										<input name="layerselect" value="7" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
-										&emsp;oakland_council_districts<br>
-										<input name="layerselect" value="8" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
-										&emsp;city_facilites<br>
-										<input name="layerselect" value="9" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
-										&emsp;ac_parcels_2015<br>
-										<input name="layerselect" value="10" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
-										&emsp;asbuilt<br>
-										<input name="layerselect" value="11" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
-										&emsp;masterproject2015<br>
-									</div>
-								</div>
-								<div class="modal-footer" style="padding:5px; padding-right:20px">
-									<button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
+							<br><br>
+							&emsp;&emsp;&emsp;&emsp;WHERE&emsp;
+							<div class="input-group">
+								<input type="text" id="searchBoxField"class="form-control" aria-label="..." readonly style="width:220px">
+								<div class="input-group-btn">
+									<!-- Button and dropdown menu -->
+									<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+										<span class="caret"></span>
+										<span class="sr-only">Toggle Dropdown</span>
+									</button>
+									<ul class="dropdown-menu" id="layerZero" style="display:none"><!--Fields within table-->
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">grid_no</a></li>
+									</ul>
+									<ul class="dropdown-menu" id="layerOne" style="display:none"><!--Fields within table-->
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">project</a></li>
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">projectno</a></li>
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">pipe_diam</a></li>
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">project</a></li>
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">facilityid</a></li>
+									</ul>
+									<ul class="dropdown-menu" id="layerTwo" style="display:none"><!--Fields within table-->
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">strucno</a></li>
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">eccon</a></li>
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">stru_type</a></li>
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">facilityid</a></li>
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">legacyid</a></li>
+									</ul>
+									<ul class="dropdown-menu" id="layerThree" style="display:none"><!--Fields within table-->
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">subbasinda</a></li>
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">projectn_1</a></li>
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">projectn_2</a></li>
+									</ul>
+									<ul class="dropdown-menu" id="layerFour" style="display:none"><!--Fields within table-->
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">struc_id</a></li>
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">oakhillsid</a></li>
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">priority</a></li>
+									</ul>
+									<ul class="dropdown-menu" id="layerFive" style="display:none"><!--Fields within table-->
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">facilityid</a></li>
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">diaminch</a></li>
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">gxp_id</a></li>
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">pipes_id</a></li>
+									</ul>
+									<ul class="dropdown-menu" id="layerSix" style="display:none"><!--Fields within table-->
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">facilityid</a></li>
+									</ul>
+									<ul class="dropdown-menu" id="layerSeven" style="display:none"><!--Fields within table-->
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">id</a></li>
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">name</a></li>
+									</ul>
+									<ul class="dropdown-menu" id="layerEight" style="display:none"><!--Fields within table-->
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">bldg_no</a></li>
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">user_</a></li>
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">facilityid</a></li>
+									</ul>
+									<ul class="dropdown-menu" id="layerNine" style="display:none"><!--Fields within table-->
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">apn_1</a></li>
+										<!--<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">apn_sort</a></li>
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">apn_air</a></li>
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">apn_ground</a></li>-->
+									</ul>
+									<ul class="dropdown-menu" id="layerTen" style="display:none"><!--Fields within table-->
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">projectno</a></li>
+									</ul>
+									<ul class="dropdown-menu" id="layerEleven" style="display:none"><!--Fields within table-->
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxField')">projectno</a></li>
+									</ul>
 								</div>
 							</div>
+							&emsp;
+							<div class="input-group">
+								<input type="text" id="searchBoxComparator"class="form-control" aria-label="..." readonly style="text-Align:center; padding-left:6px; padding-right:6px; width:60px">
+								<div class="input-group-btn">
+									<!-- Button and dropdown menu -->
+									<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+										<span class="caret"></span>
+										<span class="sr-only">Toggle Dropdown</span>
+									</button>
+									<ul class="dropdown-menu">
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxComparator')">=</a></li>
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxComparator')">></a></li>
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxComparator')">>=</a></li>
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxComparator')"><</a></li>
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxComparator')"><=</a></li>
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxComparator')"><></a></li>
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxComparator')">IS</a></li>
+										<li><a href="#" onclick="return setField($(this).text(), 'searchBoxComparator')">IS NOT</a></li>
+									</ul>
+								</div>
+							</div>
+							&emsp;
+							<div class="input-group">
+								<input type="text" id="searchBoxData" class="form-control" aria-label="...">
+							</div>
+						</div>
+						<div class="modal-footer" style="padding:10px; padding-right:30px">
+							<input type="button" class="btn btn-primary" value="Find" id="Find" style="padding-right:20px; padding-left:20px">
+							<input type="button" class="btn btn-primary" value="Clear" id="Clear" style="margin-left:10px; padding-right:20px; padding-left:20px">
+							<input type="button" class="btn btn-primary" value="Clear All" id="ClearAll" style="margin-left:10px; padding-right:20px; padding-left:20px">
 						</div>
 					</div>
-					
-				</form>
-			</ul>
-		</div>
+				</div>
+			</div>
+			
+			<button type="button" class="btn btn-primary" id="layerModalbtn">
+				<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+			</button>
+			<div id="layerModal" class="modal fade" role="dialog">
+				<div class="modal-dialog modal-sm">
+					<!--Couldn't get the modal backdrop to be completely gone, only options are to make it invisible or make it so it cant be closed by clicking outside the modal-->
+					<div class="modal-content">
+						<div class="modal-header" style="padding:10px">
+							<button type="button" class="close" data-dismiss="modal">&times;</button>
+							<h4 class="modal-title">Toggle Layers</h4>
+						</div>
+						<div class="modal-body" style="padding:10px">
+							<div class="checkbox">
+								<!-- Value should be where your layer will be stored in the sublayer array-->
+								<!-- add "checked" if you want to have the layer visible when loaded, if you don't want the layer visible you will also need to sublayer.hide() it when you load it in-->
+								<input name="layerselect" value="0" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
+								&emsp;sewergrid<br>
+								<input name="layerselect" value="1" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
+								&emsp;sscollectionsyswork<br>
+								<input name="layerselect" value="2" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
+								&emsp;sanitarysewerstructureswork<br>
+								<input name="layerselect" value="3" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
+								&emsp;subbasins<br>
+								<input name="layerselect" value="4" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
+								&emsp;stormsystemstructures<br>
+								<input name="layerselect" value="5" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
+								&emsp;stormsystempipes<br>
+								<input name="layerselect" value="6" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
+								&emsp;creeks<br>
+								<input name="layerselect" value="7" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
+								&emsp;oakland_council_districts<br>
+								<input name="layerselect" value="8" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
+								&emsp;city_facilites<br>
+								<input name="layerselect" value="9" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
+								&emsp;ac_parcels_2015<br>
+								<input name="layerselect" value="10" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
+								&emsp;asbuilt<br>
+								<input name="layerselect" value="11" type="checkbox" data-toggle="toggle" data-style="ios" data-class="fast" data-onstyle="info" data-size="mini" data-on=" " data-off=" ">
+								&emsp;masterproject2015<br>
+							</div>
+						</div>
+						<div class="modal-footer" style="padding:5px; padding-right:20px">
+							<button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
 	</nav>
     <div id="map"></div>
 	
@@ -405,6 +396,15 @@
 			}
 			console.log('layer' + num + 'Query' + newQuery);
 			createQuery(newQuery, sublayers[num]);
+		});
+		
+		$('#ClearAll').click(function(){
+			var basicQuery = "Select * From ";
+			for(var i = 0; i < sublayers.length; i++)
+			{
+				newQuery = basicQuery + sublayersNames[i];
+				createQuery(newQuery, sublayers[i]);
+			}
 		});
 		
 		function getSubLayerNum(str){
