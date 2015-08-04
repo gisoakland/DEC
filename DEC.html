@@ -380,7 +380,7 @@
 				console.log('invalid layer');
 				return;
 			}
-			console.log('layer' + num + 'Query' + newQuery);
+			console.log('layer ' + num + ' Query ' + newQuery);
 			createQuery(newQuery, sublayers[num]);
 		});
 		
@@ -394,8 +394,10 @@
 				console.log('invalid layer');
 				return;
 			}
-			console.log('layer' + num + 'Query' + newQuery);
+			console.log('layer ' + num + ' Query ' + newQuery);
 			createQuery(newQuery, sublayers[num]);
+			document.getElementById('searchBoxComparator').value = '';
+			document.getElementById('searchBoxData').value = '';
 		});
 		//manually clear all sqls because map returns error when attempting to set bounds too often
 		$('#ClearAll').click(function(){
@@ -408,6 +410,10 @@
 			sql.getBounds(newQuery).done(function(bounds){
 				map_object.fitBounds(bounds, {maxZoom:17});
 			})
+			document.getElementById('searchBoxLayer').value = '';
+			document.getElementById('searchBoxField').value = '';
+			document.getElementById('searchBoxComparator').value = '';
+			document.getElementById('searchBoxData').value = '';
 		});
 		
 		function getSubLayerNum(str){
@@ -424,6 +430,10 @@
 		});
 		
 		$('#searchModalbtn').click(function(){
+			document.getElementById('searchBoxLayer').value = '';
+			document.getElementById('searchBoxField').value = '';
+			document.getElementById('searchBoxComparator').value = '';
+			document.getElementById('searchBoxData').value = '';
 			$('#searchModal').modal();
 		});
 		
