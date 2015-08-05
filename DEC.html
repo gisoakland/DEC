@@ -56,7 +56,7 @@
 		</style>
 	</head>
 	<!-- Navigation Bar, must be padded right by 15px or a scroll bar appears at bottom of map-->
-	<nav class="navbar navbar-default" style="min-width:790px; margin:0; border:0; background-color:#FFFFFF;">
+	<nav class="navbar navbar-default" style="min-width:790px; margin:0; border:0; background-color:#FFFFFF">
 		<form class="navbar-form pull-left" style="border:0; margin-bottom:8px; margin-top: 8px; margin-right:0px; margin-left:5px; padding:0; width:460px">
 			<a class="navbar-brand pull-left" href="#" style="width:50px;height:20px;padding:0;padding-top:8px; padding-left:5px">DEC</a>
 			<input type="text" class="form-control pull-left" placeholder="Search By Address" id="pac-input" style="width: 400px">	
@@ -71,14 +71,14 @@
 						<div class="modal-header" style="padding:10px">
 							<button type="button" class="close" data-dismiss="modal">&times;</button>
 							<h4 class="modal-title">Query Builder 
-								<a tabindex="0" class="btn" style="background:#ffffff; outline:none; padding:0px; border:0px" role="button" data-toggle="popover" data-trigger="hover" title="Help" data-html="true"data-content="Fill in every field with a value using the dropdowns and type in a value for the non-grayed out textbox, then click Find.<br><br>Clear will only work on the layer that is selected in the top box.<br><br>The comparators 'IS' and 'ISNOT' are mainly used with the value NULL.<br>The bottom right textbox does not require a value, because '' or nothing is a valid query. <br><br>Please request for more searchable fields if they are known."><span class="glyphicon glyphicon-question-sign" aria-hidden="true" style="color:#337ab7;background:#ffffff;opacity:0.8;"></span></a>
+								<a tabindex="0" class="btn" style="background:#ffffff; outline:none; padding:0px; border:0px" role="button" data-toggle="popover" data-trigger="hover" title="Help" data-html="true" data-content="Fill in every field with a value using the dropdowns and type in a value for the non-grayed out textbox, then click Find.<br><br>Clear will only work on the layer that is selected in the top box.<br><br>The comparators 'IS' and 'ISNOT' are mainly used with the value NULL.<br>The bottom right textbox does not require a value, because '' or nothing is a valid query. <br><br>Please request for more searchable fields if they are known."><span class="glyphicon glyphicon-question-sign" aria-hidden="true" style="color:#337ab7;background:#ffffff;opacity:0.8"></span></a>
 							</h4>
 						</div>
 						<div class="modal-body" style="padding:30px">
 							<!-- var newQuery = "SELECT * FROM " + tableName + " WHERE " + field name + other SQL comparator + searchfield surrounded by ' ' -->
 							SELECT * FROM&emsp;
 							<div class="input-group">
-								<input type="text" id="searchBoxLayer"class="form-control" aria-label="..." readonly style="width:220px">
+								<input type="text" id="searchBoxLayer" class="form-control" aria-label="..." readonly style="width:220px">
 								<div class="input-group-btn">
 									<!-- Button and dropdown menu -->
 									<!-- Add all selection field layers to array -->
@@ -105,7 +105,7 @@
 							<br><br>
 							&emsp;&emsp;&emsp;&emsp;WHERE&emsp;
 							<div class="input-group">
-								<input type="text" id="searchBoxField"class="form-control" aria-label="..." readonly style="width:220px">
+								<input type="text" id="searchBoxField" class="form-control" aria-label="..." readonly style="width:220px">
 								<div class="input-group-btn">
 									<!-- Button and dropdown menu -->
 									<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -173,7 +173,7 @@
 							</div>
 							&emsp;
 							<div class="input-group">
-								<input type="text" id="searchBoxComparator"class="form-control" aria-label="..." readonly style="text-Align:center; padding-left:6px; padding-right:6px; width:60px">
+								<input type="text" id="searchBoxComparator" class="form-control" aria-label="..." readonly style="text-Align:center; padding-left:6px; padding-right:6px; width:60px">
 								<div class="input-group-btn">
 									<!-- Button and dropdown menu -->
 									<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -402,7 +402,7 @@
 		//manually clear all sqls because map returns error when attempting to set bounds too often
 		$('#ClearAll').click(function(){
 			var basicQuery = "Select * From ";
-			var sql = new cartodb.SQL({user});
+			var sql = new cartodb.SQL({user:user});
 			for(var i = 0; i < sublayers.length; i++){
 				newQuery = basicQuery + sublayersNames[i];
 				sublayers[i].setSQL(newQuery);
@@ -472,6 +472,13 @@
 				marker = new L.marker([place.geometry.location.lat(), place.geometry.location.lng()],{clickable:false});
 				map_object.addLayer(marker);
 			});
+			
+			$('#pac-input').keypress(function(e){
+				if(e.which == 13){
+					google.maps.event.trigger(searchBox,'place_changed');
+					return false;
+				}
+			});
 		}
 		<!--Geocoder End-->
 		
@@ -480,7 +487,7 @@
 		//still needs to be in main/onload unless you pass in the mapobject and the username or the username could just be a static
 		//requires full query statement "Select * From tableName WHERE column = 'data'" and the layer object
 		function createQuery(query, myLayer){
-			var sql = new cartodb.SQL({user});
+			var sql = new cartodb.SQL({user:user});
 			myLayer.setSQL(query);
 			sql.getBounds(query).done(function(bounds){
 				map_object.fitBounds(bounds, {maxZoom:17});
