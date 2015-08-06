@@ -316,16 +316,47 @@
 					maxZoom: 21 //suggested max zoom allowed
 		}
 		
-		// Instantiate map on specified DOM element
+		//Add basemaps
+		//http://leaflet-extras.github.io/leaflet-providers/preview/#filter=Esri
+		//https://gist.github.com/mourner/1804938
+		//http://leafletjs.com/plugins.html
 		var map_object = new L.Map(map, options);
-		
-		// Add a basemap to the map object just created
-		L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+		var Positron = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
 			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
 			maxZoom:22,
-			maxNativeZoom: 18 //zoom level to scale additional zoom layers
-			}).addTo(map_object);
-        
+			maxNativeZoom: 18
+		}).on('load',function(){
+			Positron.bringToBack();
+		}).addTo(map_object);
+		var DarkMatter = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',{
+			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+			maxZoom:22,
+			maxNativeZoom: 18
+		}).on('load',function(){
+			DarkMatter.bringToBack();
+		});
+		var OSM = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+			attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+			maxZoom:22,
+			maxNativeZoom: 19
+		}).on('load',function(){
+			OSM.bringToBack();
+		});
+		var Esri_WorldImagery = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+			attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+			maxZoom:22,
+			maxNativeZoom: 19
+		}).on('load',function(){
+			Esri_WorldImagery.bringToBack();
+		});
+		var myBasemaps = {
+			'Positron': Positron,
+			'Dark Matter': DarkMatter,
+			'Open Street Map': OSM,
+			'Esri World Imagery': Esri_WorldImagery
+		}
+		L.control.layers(myBasemaps, null).addTo(map_object);
+
 		var sublayers = [];
 		var sublayersNames = [];
 		//don't try to use a loop to grab from different vizjsons
@@ -359,7 +390,7 @@
 			})
 			.error(function(err){
 				console.log("error: " + err);
-			});
+			});		
 		initSearchBox();
 		
 		<!--wiring up buttons to do things-->
@@ -427,6 +458,7 @@
 		
 		$('#layerModalbtn').click(function(){
 			$('#layerModal').modal();
+			console.log(map_object.getZoom());
 		});
 		
 		$('#searchModalbtn').click(function(){
