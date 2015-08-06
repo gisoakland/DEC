@@ -318,8 +318,11 @@
 		
 		//Add basemaps
 		//http://leaflet-extras.github.io/leaflet-providers/preview/#filter=Esri
+		//http://leaflet-extras.github.io/leaflet-providers/preview/
 		//https://gist.github.com/mourner/1804938
 		//http://leafletjs.com/plugins.html
+		//console.log(map_object.getZoom()); debug code to find NativeZoom max
+		//may change to map.removeLayer(name)
 		var map_object = new L.Map(map, options);
 		var Positron = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
 			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
@@ -327,7 +330,7 @@
 			maxNativeZoom: 18
 		}).on('load',function(){
 			Positron.bringToBack();
-		}).addTo(map_object);
+		});
 		var DarkMatter = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',{
 			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
 			maxZoom:22,
@@ -342,6 +345,13 @@
 		}).on('load',function(){
 			OSM.bringToBack();
 		});
+		var Esri_WorldTopoMap = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+			attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community',
+			maxZoom:22,
+			maxNativeZoom: 19
+		}).on('load',function(){
+			Esri_WorldTopoMap.bringToBack();
+		}).addTo(map_object);
 		var Esri_WorldImagery = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
 			attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
 			maxZoom:22,
@@ -351,11 +361,15 @@
 		});
 		var myBasemaps = {
 			'Positron': Positron,
-			'Dark Matter': DarkMatter,
+			//'Dark Matter': DarkMatter,
 			'Open Street Map': OSM,
+			'Esri World Topo Map': Esri_WorldTopoMap,
 			'Esri World Imagery': Esri_WorldImagery
 		}
-		L.control.layers(myBasemaps, null).addTo(map_object);
+		L.control.layers(myBasemaps, null, {collapsed:false, position:'bottomright'}).addTo(map_object);
+		//tried to use L.control.layers for basemaps and sublayers, did not work. Can only add sublayers by each layer group/vizjson
+		//possible to use if we make it 1 layer per map/vizjson
+		//further research has shown that using this method does not keep the zindex of each layer intact as it uses add and remove layer
 
 		var sublayers = [];
 		var sublayersNames = [];
@@ -458,7 +472,6 @@
 		
 		$('#layerModalbtn').click(function(){
 			$('#layerModal').modal();
-			console.log(map_object.getZoom());
 		});
 		
 		$('#searchModalbtn').click(function(){
